@@ -44,7 +44,7 @@ class NatronLauncher(SoftwareLauncher):
             "/Applications/INRIA/Natron-{version}/Natron.app",
         ],
         "win32": [
-            "C:/Program Files/INRIA/Natron-{version}/bin/Natron.exe",
+            "C:/Program Files/Natron/bin/Natron.exe",
         ],
         "linux2": [
             "/usr/INRIA/Natron-{version}/bin/Natron",
@@ -56,7 +56,7 @@ class NatronLauncher(SoftwareLauncher):
         """
         The minimum software version that is supported by the launcher.
         """
-        return "2.3.14"
+        return None
 
     def prepare_launch(self, exec_path, args, file_to_open=None):
         """
@@ -129,6 +129,18 @@ class NatronLauncher(SoftwareLauncher):
         # all the executable templates for the current OS
         executable_templates = self.EXECUTABLE_TEMPLATES.get(sys.platform, [])
 
+        # This is a workaround for the Windows platform because the latest Windows installer
+        # does not install to a version directory.
+        if sys.platform == "win32":
+            return [
+                SoftwareVersion(
+                    "2.4.3",
+                    "Natron",
+                    executable_templates[0],
+                    self._icon_from_engine()
+                )
+            ]
+        
         # all the discovered executables
         sw_versions = []
 
